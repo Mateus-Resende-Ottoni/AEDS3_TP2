@@ -1,7 +1,7 @@
 package entidades;
 
 
-import estruturas.RegistroHashExtensivel;
+import estruturas.RegistroArvoreBMais;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,7 +12,7 @@ import java.io.IOException;
 
 // Par de dois IDs, para representar o relacionamento N:N
 //  entre duas entidades.
-public class ParIDID implements RegistroHashExtensivel<ParIDID> {
+public class ParIDID implements RegistroArvoreBMais<ParIDID> {
     
     private int id1;   // chave 1
     private int id2;    // chave 2
@@ -59,6 +59,22 @@ public class ParIDID implements RegistroHashExtensivel<ParIDID> {
         DataInputStream dis = new DataInputStream(bais);
         this.id1 = dis.readInt();
         this.id2 = dis.readInt();
+    }
+
+    // Método de comparação, ainda não plenamente implementado
+    @Override
+    public int compareTo(ParIDID obj) {
+        if (this.id1 == obj.id1) {
+            return Integer.compare(this.id2, obj.id2);
+        }
+        else {
+            return Integer.compare(this.id1, obj.id1);
+        }
+    }
+
+    @Override
+    public ParIDID clone() {
+        return new ParIDID(this.id1, this.id2);
     }
 
 }

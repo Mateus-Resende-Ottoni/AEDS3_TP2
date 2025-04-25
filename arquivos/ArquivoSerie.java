@@ -2,14 +2,21 @@ package arquivos;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 
 import entidades.Serie;
 import entidades.ParNomeID;
 import estruturas.HashExtensivel;
+import entidades.Ator;
+import entidades.ParIDID;
+import estruturas.ArvoreBMais;
 
 public class ArquivoSerie extends Arquivo<Serie> {
 
     private HashExtensivel<ParNomeID> indiceIndiretoNome;
+
+    private ArvoreBMais<ParIDID> indiceBMais_Atores;
 
     public ArquivoSerie() throws Exception {
         super("series", Serie.class.getConstructor());
@@ -19,6 +26,9 @@ public class ArquivoSerie extends Arquivo<Serie> {
             ".\\dados\\series\\indiceNome.d.db",   // diretório
             ".\\dados\\series\\indiceNome.c.db"    // cestos
         );
+
+        Constructor<ParIDID> c = ParIDID.class.getConstructor();
+        indiceBMais_Atores = new ArvoreBMais<>(c, 7, ".\\dados\\series\\indiceB+Atores.db");
     }
 
     @Override
@@ -47,6 +57,24 @@ public class ArquivoSerie extends Arquivo<Serie> {
         return read(pni.getId());
     }
     
+    // Obter array com ids dos atores relacionadas a série
+    public int[] getAtores(int idSerie) throws Exception {
+        int[] lista_ids;
+
+        ArrayList<ParIDID> lista = indiceBMais_Atores.read(new ParIDID(idSerie, -1));
+
+        if (lista == null) {
+            lista_ids = new int[0];
+        } else {
+            lista_ids = new int[lista.size()];
+            for (int i = 0; i < lista.size(); i++) {
+                lista_ids[i] = lista.get(i).getId2();
+            }
+        }
+
+        return lista_ids;
+    }
+
     public boolean delete(String nome) throws Exception {
         ParNomeID pni = indiceIndiretoNome.read(ParNomeID.hash(nome));
         if (pni != null) {
@@ -85,4 +113,18 @@ public class ArquivoSerie extends Arquivo<Serie> {
         }
         return false;
     }
+
+    // Para associar um ator a uma serie
+    public boolean associar_ator(int idSerie, int idAtor) throws Exception {
+
+        Serie serie = read(idSerie);
+        if (serie == null) {
+            System.out.println("Série não encontrada: " + idSerie);
+            return false;
+        }
+
+        ParIDID par = new ParIDID(idSerie, idAtor);
+        return indiceBMais_Atores.create(par);
+    }
+
 }
