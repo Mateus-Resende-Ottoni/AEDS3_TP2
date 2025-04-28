@@ -7,24 +7,22 @@ import java.util.ArrayList;
 
 import entidades.Ator;
 import entidades.ParNomeID;
-import estruturas.HashExtensivel;
-
 import entidades.ParIDID;
 import estruturas.ArvoreBMais;
+import estruturas.HashExtensivel;
 
 public class ArquivoAtor extends Arquivo<Ator> {
 
     private HashExtensivel<ParNomeID> indiceIndiretoNome;
-
     private ArvoreBMais<ParIDID> indiceBMais_Series;
 
     public ArquivoAtor() throws Exception {
-        super("series", Ator.class.getConstructor());
+        super("atores", Ator.class.getConstructor());
         indiceIndiretoNome = new HashExtensivel<>(
-            ParNomeID.class.getConstructor(), 
-            4, 
-            ".\\dados\\atores\\indiceNome.d.db",   // diretório
-            ".\\dados\\atores\\indiceNome.c.db"    // cestos
+            ParNomeID.class.getConstructor(),
+            4,
+            ".\\dados\\atores\\indiceNome.d.db",
+            ".\\dados\\atores\\indiceNome.c.db"
         );
 
         Constructor<ParIDID> c = ParIDID.class.getConstructor();
@@ -35,7 +33,7 @@ public class ArquivoAtor extends Arquivo<Ator> {
     public int create(Ator c) throws Exception {
         if (read(c.getNome()) != null) {
             System.out.println("Ator já cadastrado: " + c.getNome());
-            return -1; // Retorna um valor inválido se o ator já existir
+            return -1;
         }
         int id = super.create(c);
         indiceIndiretoNome.create(new ParNomeID(c.getNome(), id));
@@ -44,7 +42,7 @@ public class ArquivoAtor extends Arquivo<Ator> {
 
     public boolean temAtores() {
         try (RandomAccessFile raf = new RandomAccessFile(nomeArquivo, "r")) {
-            return raf.length() > 4; // Deve ter pelo menos 4 bytes para armazenar algum dado
+            return raf.length() > 4;
         } catch (IOException e) {
             System.out.println("Erro ao acessar o arquivo de atores: " + e.getMessage());
         }
@@ -57,10 +55,8 @@ public class ArquivoAtor extends Arquivo<Ator> {
         return read(pni.getId());
     }
 
-    // Obter array com ids das séries relacionadas ao ator
     public int[] getSeries(int idAtor) throws Exception {
         int[] lista_ids;
-
         ArrayList<ParIDID> lista = indiceBMais_Series.read(new ParIDID(idAtor, -1));
 
         if (lista == null) {
@@ -71,16 +67,12 @@ public class ArquivoAtor extends Arquivo<Ator> {
                 lista_ids[i] = lista.get(i).getId2();
             }
         }
-
         return lista_ids;
     }
-    
+
     public boolean delete(String nome) throws Exception {
         ParNomeID pni = indiceIndiretoNome.read(ParNomeID.hash(nome));
         if (pni != null) {
-            //System.out.println("ArquivoAtor delete() IndiceIndireto delete call");
-            //return indiceIndiretoNome.delete(ParNomeID.hash(nome));
-            
             return delete(pni.getId());
         }
         return false;
@@ -101,7 +93,7 @@ public class ArquivoAtor extends Arquivo<Ator> {
     public boolean update(Ator novoAtor) throws Exception {
         Ator atorAntigo = read(novoAtor.getNome());
         if (atorAntigo == null) {
-            System.out.println("Série não encontrada para atualização: " + novoAtor.getNome());
+            System.out.println("Ator não encontrado para atualização: " + novoAtor.getNome());
             return false;
         }
         if (super.update(novoAtor)) {
@@ -114,15 +106,28 @@ public class ArquivoAtor extends Arquivo<Ator> {
         return false;
     }
 
-    // Para associar uma serie a um ator
+    // Método público para associar Série a Ator (e vice-versa)
     public boolean associar_serie(int idAtor, int idSerie) throws Exception {
         Ator ator = read(idAtor);
         if (ator == null) {
             System.out.println("Ator não encontrado: " + idAtor);
             return false;
         }
+
+        ParIDID par = new ParIDID(idAtor, idSerie);
+        boolean associado = indiceBMais_Series.create(par);
+
+        if (associado) {
+            ArquivoSerie arqSerie = new ArquivoSerie();
+            arqSerie.associar_ator_sem_retorno(idSerie, idAtor);
+        }
+
+        return associado;
+    }
+
+    // Método protegido para associação silenciosa
+    protected boolean associar_serie_sem_retorno(int idAtor, int idSerie) throws Exception {
         ParIDID par = new ParIDID(idAtor, idSerie);
         return indiceBMais_Series.create(par);
     }
-
 }
