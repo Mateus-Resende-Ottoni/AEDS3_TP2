@@ -16,6 +16,7 @@ public class ArquivoSerie extends Arquivo<Serie> {
 
     private HashExtensivel<ParNomeID> indiceIndiretoNome;
     private ArvoreBMais<ParIDID> indiceBMais_Atores;
+    private ArquivoAtor arqAtor;
 
     public ArquivoSerie() throws Exception {
         super("series", Serie.class.getConstructor());
@@ -74,6 +75,17 @@ public class ArquivoSerie extends Arquivo<Serie> {
     public boolean delete(String nome) throws Exception {
         ParNomeID pni = indiceIndiretoNome.read(ParNomeID.hash(nome));
         if (pni != null) {
+
+            // Deletar associações com atores
+            int[] lista_id_atores = getAtores(pni.getId());
+
+            if (lista_id_atores.length > 0) {
+                for (int x = 0; x < lista_id_atores.length; x++) {
+                    // System.out.println("Deletando associaçao com ator:" + lista_id_atores[x])
+                    deletar_associao_ator(pni.getId(), lista_id_atores[x]);
+                }
+            }
+
             return delete(pni.getId());
         }
         return false;
@@ -130,5 +142,29 @@ public class ArquivoSerie extends Arquivo<Serie> {
     protected boolean associar_ator_sem_retorno(int idSerie, int idAtor) throws Exception {
         ParIDID par = new ParIDID(idSerie, idAtor);
         return indiceBMais_Atores.create(par);
+    }
+    
+    // Deletar relação entre Série e Ator
+    public boolean deletar_associao_ator(int idSerie, int idAtor) throws Exception {
+        Serie serie = read(idSerie);
+        if (serie == null) {
+            System.out.println("Série não encontrada: " + idSerie);
+            return false;
+        }
+
+        ParIDID par = new ParIDID(idSerie, idAtor);
+        boolean deletado = indiceBMais_Atores.delete(par);
+
+        if (deletado) {
+            arqAtor.deletar_associacao_serie_sem_retorno(idAtor, idSerie);
+        }
+
+        return deletado;
+    }
+
+    // Método protegido para deletar associação silenciosamente
+    protected boolean deletar_associacao_ator_sem_retorno(int idSerie, int idAtor) throws Exception {
+        ParIDID par = new ParIDID(idSerie, idAtor);
+        return indiceBMais_Atores.delete(par);
     }
 }

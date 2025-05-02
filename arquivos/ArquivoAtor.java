@@ -15,6 +15,7 @@ public class ArquivoAtor extends Arquivo<Ator> {
 
     private HashExtensivel<ParNomeID> indiceIndiretoNome;
     private ArvoreBMais<ParIDID> indiceBMais_Series;
+    private ArquivoSerie arqSerie;
 
     public ArquivoAtor() throws Exception {
         super("atores", Ator.class.getConstructor());
@@ -24,6 +25,8 @@ public class ArquivoAtor extends Arquivo<Ator> {
             ".\\dados\\atores\\indiceNome.d.db",
             ".\\dados\\atores\\indiceNome.c.db"
         );
+
+        arqSerie = new ArquivoSerie();
 
         Constructor<ParIDID> c = ParIDID.class.getConstructor();
         indiceBMais_Series = new ArvoreBMais<>(c, 7, ".\\dados\\atores\\indiceB+Series.db");
@@ -53,6 +56,17 @@ public class ArquivoAtor extends Arquivo<Ator> {
         ParNomeID pni = indiceIndiretoNome.read(ParNomeID.hash(nome));
         if (pni == null) return null;
         return read(pni.getId());
+    }
+
+    public boolean temSerie(int idAtor) throws Exception {
+        boolean resultado = false;
+        ArrayList<ParIDID> lista = indiceBMais_Series.read(new ParIDID(idAtor, -1));
+
+        if (lista != null) {
+            resultado = true;
+        }
+        
+        return resultado;
     }
 
     public int[] getSeries(int idAtor) throws Exception {
@@ -130,4 +144,29 @@ public class ArquivoAtor extends Arquivo<Ator> {
         ParIDID par = new ParIDID(idAtor, idSerie);
         return indiceBMais_Series.create(par);
     }
+
+    // Deletar relação entre Ator e Série
+    public boolean deletar_associao_serie(int idAtor, int idSerie) throws Exception {
+        Ator ator = read(idAtor);
+        if (ator == null) {
+            System.out.println("Ator não encontrado: " + idAtor);
+            return false;
+        }
+
+        ParIDID par = new ParIDID(idAtor, idSerie);
+        boolean deletado = indiceBMais_Series.delete(par);
+
+        if (deletado) {
+            arqSerie.deletar_associacao_ator_sem_retorno(idSerie, idAtor);
+        }
+
+        return deletado;
+    }
+
+    // Método protegido para deletar associação silenciosamente
+    protected boolean deletar_associacao_serie_sem_retorno(int idAtor, int idSerie) throws Exception {
+        ParIDID par = new ParIDID(idAtor, idSerie);
+        return indiceBMais_Series.delete(par);
+    }
+
 }
