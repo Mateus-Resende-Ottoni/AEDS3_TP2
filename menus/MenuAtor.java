@@ -291,7 +291,7 @@ public class MenuAtor {
                 System.out.println("Ator nao encontrado.");
             }
         } catch (Exception e) {
-            System.out.println("Erro do sistema. Nao foi possível buscar o ator!");
+            System.out.println("Erro do sistema.");
             e.printStackTrace();
         }
     }
@@ -311,7 +311,14 @@ public class MenuAtor {
             Ator ator = arqAtor.read(nome);
             if (ator != null) {
                 int [] lista_id_series = arqAtor.getSeries(ator.getId());
-                if (lista_id_series.length == 0) {
+
+                // Teste para ver lista de ids coletados
+                for (int x = 0; x < lista_id_series.length; x++) {
+                    System.out.println(lista_id_series[x]);
+                }
+
+                // Conferir se há associações para listar
+                if (lista_id_series.length <= 0) {
                     System.out.println("Nenhuma série associada ao ator.");
                     return;
                 } else {

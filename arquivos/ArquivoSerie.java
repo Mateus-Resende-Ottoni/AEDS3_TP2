@@ -66,6 +66,10 @@ public class ArquivoSerie extends Arquivo<Serie> {
         } else {
             lista_ids = new int[lista.size()];
             for (int i = 0; i < lista.size(); i++) {
+
+                // Teste do par lido
+                System.out.println("ID Ator: " + lista.get(i).getId1() + " ID Serie: " + lista.get(i).getId2());
+
                 lista_ids[i] = lista.get(i).getId2();
             }
         }
@@ -131,7 +135,9 @@ public class ArquivoSerie extends Arquivo<Serie> {
         boolean associado = indiceBMais_Atores.create(par);
 
         if (associado) {
-            ArquivoAtor arqAtor = new ArquivoAtor();
+
+            arqAtor = new ArquivoAtor();
+
             arqAtor.associar_serie_sem_retorno(idAtor, idSerie);
         }
 
@@ -156,6 +162,9 @@ public class ArquivoSerie extends Arquivo<Serie> {
         boolean deletado = indiceBMais_Atores.delete(par);
 
         if (deletado) {
+
+            arqAtor = new ArquivoAtor();
+
             arqAtor.deletar_associacao_serie_sem_retorno(idAtor, idSerie);
         }
 
@@ -166,5 +175,10 @@ public class ArquivoSerie extends Arquivo<Serie> {
     protected boolean deletar_associacao_ator_sem_retorno(int idSerie, int idAtor) throws Exception {
         ParIDID par = new ParIDID(idSerie, idAtor);
         return indiceBMais_Atores.delete(par);
+    }
+
+    public void mostrar_arvore() throws Exception {
+        indiceBMais_Atores.print();
+        System.out.printf("\n\n");
     }
 }

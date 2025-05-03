@@ -26,8 +26,6 @@ public class ArquivoAtor extends Arquivo<Ator> {
             ".\\dados\\atores\\indiceNome.c.db"
         );
 
-        arqSerie = new ArquivoSerie();
-
         Constructor<ParIDID> c = ParIDID.class.getConstructor();
         indiceBMais_Series = new ArvoreBMais<>(c, 7, ".\\dados\\atores\\indiceB+Series.db");
     }
@@ -65,7 +63,7 @@ public class ArquivoAtor extends Arquivo<Ator> {
         if (lista != null) {
             resultado = true;
         }
-        
+
         return resultado;
     }
 
@@ -78,9 +76,16 @@ public class ArquivoAtor extends Arquivo<Ator> {
         } else {
             lista_ids = new int[lista.size()];
             for (int i = 0; i < lista.size(); i++) {
+            
+                // Teste do par lido
+                System.out.println("ID Ator: " + lista.get(i).getId1() + " ID Serie: " + lista.get(i).getId2());
+
                 lista_ids[i] = lista.get(i).getId2();
             }
         }
+
+        indiceBMais_Series.print();
+
         return lista_ids;
     }
 
@@ -129,11 +134,22 @@ public class ArquivoAtor extends Arquivo<Ator> {
         }
 
         ParIDID par = new ParIDID(idAtor, idSerie);
+        
+        System.out.println("Associar_serie, IdAtor(" + idAtor +") e IdSerie(" + idSerie + ")");
+        System.out.println("Criando em Arvore B+ Ator_Serie par: " + par.getId1() + " " + par.getId2());
         boolean associado = indiceBMais_Series.create(par);
 
+        mostrar_arvore();
+
         if (associado) {
-            ArquivoSerie arqSerie = new ArquivoSerie();
+            System.out.printf("\n\n");
+            System.out.println("Criando em Arvore B+ Serie_Ator par: " + par.getId2() + " " + par.getId1());
+
+            arqSerie = new ArquivoSerie();
+
             arqSerie.associar_ator_sem_retorno(idSerie, idAtor);
+
+            arqSerie.mostrar_arvore();
         }
 
         return associado;
@@ -157,6 +173,9 @@ public class ArquivoAtor extends Arquivo<Ator> {
         boolean deletado = indiceBMais_Series.delete(par);
 
         if (deletado) {
+
+            arqSerie = new ArquivoSerie();
+            
             arqSerie.deletar_associacao_ator_sem_retorno(idSerie, idAtor);
         }
 
@@ -167,6 +186,11 @@ public class ArquivoAtor extends Arquivo<Ator> {
     protected boolean deletar_associacao_serie_sem_retorno(int idAtor, int idSerie) throws Exception {
         ParIDID par = new ParIDID(idAtor, idSerie);
         return indiceBMais_Series.delete(par);
+    }
+
+    public void mostrar_arvore() throws Exception {
+        indiceBMais_Series.print();
+        System.out.printf("\n\n");
     }
 
 }

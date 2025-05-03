@@ -164,6 +164,8 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
         arquivo.seek(0);
         raiz = arquivo.readLong();
 
+        System.out.println("ArvoreBMais Read, raiz da arvore: " + raiz);
+
         // Executa a busca recursiva
         if (raiz != -1)
             return read1(elem, raiz);
@@ -176,6 +178,7 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
     // Busca recursiva. Este método recebe a referência de uma página e busca
     // pela chave na mesma. A busca continua pelos filhos, se houverem.
     private ArrayList<T> read1(T elem, long pagina) throws Exception {
+        System.out.println("Read1 pagina " + pagina);
 
         // Como a busca é recursiva, a descida para um filho inexistente
         // (filho de uma página folha) retorna um vetor vazio.
@@ -208,6 +211,9 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
             // Cria a lista de retorno e insere os elementos encontrados
             ArrayList<T> lista = new ArrayList<>();
             while (elem==null || elem.compareTo(pa.elementos.get(i)) <= 0) {
+                if (elem != null) {
+                    System.out.println("Criando lista de retorno, elemento comparado: " + pa.elementos.get(i).toString());
+                }
 
                 if (elem==null || elem.compareTo(pa.elementos.get(i)) == 0)
                     lista.add(pa.elementos.get(i));
@@ -286,7 +292,7 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
     // função chama a segunda recursivamente, passando a raiz como referência.
     // Eventualmente, a árvore pode crescer para cima.
     public boolean create(T elem) throws Exception {
-        //System.out.println("ArvoreBMais Create start");
+        System.out.println("ArvoreBMais Create start, creating " + elem.toString());
 
         // Carrega a raiz
         arquivo.seek(0);
@@ -310,12 +316,16 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
 
         // Testa a necessidade de criação de uma nova raiz.
         if (cresceu) {
+            System.out.println("ArvoreBMais Create nova raiz (creceu)");
 
             // Cria a nova página que será a raiz. O ponteiro esquerdo da raiz
             // será a raiz antiga e o seu ponteiro direito será para a nova página.
             Pagina novaPagina = new Pagina(construtor, ordem);
             novaPagina.elementos = new ArrayList<>(this.maxElementos);
             novaPagina.elementos.add(elemAux);
+
+            System.out.println("Novos filhos: " + pagina + " , " + paginaAux);
+
             novaPagina.filhos = new ArrayList<>(this.maxFilhos);
             novaPagina.filhos.add(pagina);
             novaPagina.filhos.add(paginaAux);
@@ -324,6 +334,7 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
             arquivo.seek(8);
             long end = arquivo.readLong();
             if(end==-1) {
+                System.out.println("Sem espaço de arquivo excluído");
                 end = arquivo.length();
             } else { // reusa um endereço e atualiza a lista de excluídos no cabeçalho
                 arquivo.seek(end);
@@ -342,15 +353,15 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
             inserido = true;
         }
 
-        //System.out.println("ArvoreBMais Create end");
+        System.out.println("ArvoreBMais Create end");
         return inserido;
     }
 
     // Função recursiva de inclusão. A função passa uma página de referência.
     // As inclusões são sempre feitas em uma folha.
     private boolean create1(long pagina) throws Exception {
-        //System.out.print("ArvoreBMais Create1 start");
-        //System.out.printf(" - %d \n", pagina);
+        System.out.print("ArvoreBMais Create1 start");
+        System.out.printf(" _ %d \n", pagina);
 
         // Testa se passou para o filho de uma página folha. Nesse caso,
         // inicializa as variáveis globais de controle.
@@ -385,10 +396,15 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
         // Continua a busca recursiva por uma nova página. A busca continuará até o
         // filho inexistente de uma página folha ser alcançado.
         boolean inserido;
-        if (i == pa.elementos.size() || elemAux.compareTo(pa.elementos.get(i)) < 0)
+
+        if (i == pa.elementos.size() || elemAux.compareTo(pa.elementos.get(i)) < 0) {
+            System.out.println("ArvoreBMais, filho atual: " + pa.filhos.get(i).toString());
             inserido = create1(pa.filhos.get(i));
-        else
+        }
+        else {
+            System.out.println("ArvoreBMais, filho atual: " + pa.filhos.get(i+1).toString());
             inserido = create1(pa.filhos.get(i + 1));
+        }
 
         // A partir deste ponto, as chamadas recursivas já foram encerradas.
         // Assim, o próximo código só é executado ao retornar das chamadas recursivas.
@@ -502,8 +518,8 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
         arquivo.seek(pagina);
         arquivo.write(pa.toByteArray());
 
-        //System.out.print("ArvoreBMais Create1 end");
-        //System.out.printf(" - %d \n", pagina);
+        System.out.print("ArvoreBMais Create1 end");
+        System.out.printf(" - %d \n", pagina);
         return true;
     }
 

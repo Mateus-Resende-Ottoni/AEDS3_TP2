@@ -488,7 +488,7 @@ public class MenuSeries
                 System.out.println("Série nao encontrado.");
             }
         } catch (Exception e) {
-            System.out.println("Erro do sistema. Nao foi possível buscar a série!");
+            System.out.println("Erro do sistema.");
             e.printStackTrace();
         }
     }
@@ -508,7 +508,14 @@ public class MenuSeries
             Serie serie = arqSeries.read(nome);
             if (serie != null) {
                 int [] lista_id_atores = arqSeries.getAtores(serie.getId());
-                if (lista_id_atores.length == 0) {
+
+                // Teste para ver lista de ids coletados
+                for (int x = 0; x < lista_id_atores.length; x++) {
+                    System.out.println(lista_id_atores[x]);
+                }
+
+                // Conferir se há associações para listar
+                if (lista_id_atores.length <= 0) {
                     System.out.println("Ator nao possui series associadas.");
                     return;
                 } else {
