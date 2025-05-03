@@ -51,7 +51,7 @@ public class MenuEpisodio {
 
         int opcao;
         do {
-            System.out.println("\nPUCFlix 1.0");
+            System.out.println("\nPUCFlix 2.0");
             System.out.println("-----------");
             System.out.print("> Início > Episodio (");
             System.out.print(nome_serie);

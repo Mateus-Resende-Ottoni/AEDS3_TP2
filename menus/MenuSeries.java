@@ -33,7 +33,7 @@ public class MenuSeries
         do 
         {
 
-            System.out.println("\nPUCFlix 1.0");
+            System.out.println("\nPUCFlix 2.0");
             System.out.println("-----------");
             System.out.println("> Início > Series");
             System.out.println("\n1) Incluir");

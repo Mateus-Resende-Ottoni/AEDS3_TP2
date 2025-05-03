@@ -78,7 +78,7 @@ public class ArquivoAtor extends Arquivo<Ator> {
             for (int i = 0; i < lista.size(); i++) {
             
                 // Teste do par lido
-                System.out.println("ID Ator: " + lista.get(i).getId1() + " ID Serie: " + lista.get(i).getId2());
+                //System.out.println("ID Ator: " + lista.get(i).getId1() + " ID Serie: " + lista.get(i).getId2());
 
                 lista_ids[i] = lista.get(i).getId2();
             }
@@ -135,21 +135,21 @@ public class ArquivoAtor extends Arquivo<Ator> {
 
         ParIDID par = new ParIDID(idAtor, idSerie);
         
-        System.out.println("Associar_serie, IdAtor(" + idAtor +") e IdSerie(" + idSerie + ")");
-        System.out.println("Criando em Arvore B+ Ator_Serie par: " + par.getId1() + " " + par.getId2());
+        //System.out.println("Associar_serie, IdAtor(" + idAtor +") e IdSerie(" + idSerie + ")");
+        //System.out.println("Criando em Arvore B+ Ator_Serie par: " + par.getId1() + " " + par.getId2());
         boolean associado = indiceBMais_Series.create(par);
 
-        mostrar_arvore();
+        //mostrar_arvore();
 
         if (associado) {
-            System.out.printf("\n\n");
-            System.out.println("Criando em Arvore B+ Serie_Ator par: " + par.getId2() + " " + par.getId1());
+            //System.out.printf("\n\n");
+            //System.out.println("Criando em Arvore B+ Serie_Ator par: " + par.getId2() + " " + par.getId1());
 
             arqSerie = new ArquivoSerie();
 
             arqSerie.associar_ator_sem_retorno(idSerie, idAtor);
 
-            arqSerie.mostrar_arvore();
+            //arqSerie.mostrar_arvore();
         }
 
         return associado;
@@ -175,7 +175,7 @@ public class ArquivoAtor extends Arquivo<Ator> {
         if (deletado) {
 
             arqSerie = new ArquivoSerie();
-            
+
             arqSerie.deletar_associacao_ator_sem_retorno(idSerie, idAtor);
         }
 

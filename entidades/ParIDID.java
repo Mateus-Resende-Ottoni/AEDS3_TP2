@@ -54,7 +54,7 @@ public class ParIDID implements RegistroArvoreBMais<ParIDID> {
     }
 
     public void fromByteArray(byte[] ba) throws IOException {
-        System.out.println("ParIDID fromByteArray: " + ba);
+        //System.out.println("ParIDID fromByteArray: " + ba);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(ba);
         DataInputStream dis = new DataInputStream(bais);

@@ -68,7 +68,7 @@ public class ArquivoSerie extends Arquivo<Serie> {
             for (int i = 0; i < lista.size(); i++) {
 
                 // Teste do par lido
-                System.out.println("ID Ator: " + lista.get(i).getId1() + " ID Serie: " + lista.get(i).getId2());
+                //System.out.println("ID Ator: " + lista.get(i).getId1() + " ID Serie: " + lista.get(i).getId2());
 
                 lista_ids[i] = lista.get(i).getId2();
             }
