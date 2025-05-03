@@ -384,6 +384,20 @@ public class MenuSeries
 
                     System.out.println("");
 
+                    // Tentar excluir associações entre série e ator
+                    int [] lista_id_atores = arqSeries.getAtores(serie.getId());
+                    boolean associacaoExcluida = true;
+                    for (int x = 0; x < lista_id_atores.length && associacaoExcluida; x++) {
+                        associacaoExcluida = arqSeries.deletar_associao_ator(serie.getId(), lista_id_atores[x]);
+                    }
+                    if (associacaoExcluida) {
+                        System.out.println("Associacao(s) com ator(es) excluída(s) com sucesso.");
+                    } else {
+                        System.out.println("Erro ao excluir a(s) associacao(oes) com ator(es).");
+                    }
+
+                    System.out.println("");
+
                     boolean excluido = arqSeries.delete(nome);  // Chama o método de exclusão no arquivo
                     if (excluido) {
                         System.out.println("Serie excluído com sucesso.");

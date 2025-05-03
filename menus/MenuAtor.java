@@ -192,11 +192,20 @@ public class MenuAtor {
                 char resp = console.nextLine().charAt(0);
 
                 if (resp == 'S' || resp == 's') {
-                    boolean excluido = arqAtor.delete(nome);
-                    if (excluido) {
-                        System.out.println("Ator excluído com sucesso.");
-                    } else {
-                        System.out.println("Erro ao excluir o ator.");
+
+                    // Confirmar se há associações com séries
+                    int [] lista_id_series = arqAtor.getSeries(ator.getId());
+                    if (lista_id_series.length > 0) {
+                        System.out.println("Ator associado a série(s). Exclusao nao permitida.");
+                    }
+                    else {
+                        boolean excluido = arqAtor.delete(nome);
+                        if (excluido) {
+                            System.out.println("Ator excluído com sucesso.");
+                        } else {
+                            System.out.println("Erro ao excluir o ator.");
+                        }
+
                     }
                 } else {
                     System.out.println("Exclusao cancelada.");
